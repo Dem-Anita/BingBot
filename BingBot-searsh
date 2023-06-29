@@ -1,0 +1,33 @@
+// ==UserScript==
+// @name         BingBot
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  script for search
+// @author       Demidova Anna
+// @match        https://www.bing.com/*
+// @icon         https://www.google.com/s2/favicons?
+// @grant        none
+// ==/UserScript==
+
+let links = document.links;
+let button = document.getElementsByName("search")[0];
+let keywords = ["Раздельный сбор отходов","Куда сдавать батарейки","Куда едут отходы",];
+let keyword = keywords[getRandom(0, keywords.length)];
+
+if(button != undefined) {
+document.getElementsByName("q")[0].value = keyword;
+button.click();
+}
+else {
+for(let i = 0; i < links.length; i++) {
+if (links[i].href.includes("rcycle.net")) {
+let link = links[i];
+link.click();
+break;
+};
+};
+};
+
+function getRandom(min, max) {
+return Math.floor(Math.random() * (max - min) + min);
+};
