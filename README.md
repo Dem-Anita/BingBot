@@ -1,0 +1,2 @@
+# BingBot
+BingBot for serch
