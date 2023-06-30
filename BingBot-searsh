@@ -5,29 +5,86 @@
 // @description  script for search
 // @author       Demidova Anna
 // @match        https://www.bing.com/*
+// @match        https://rcycle.net/*
 // @icon         https://www.google.com/s2/favicons?
 // @grant        none
 // ==/UserScript==
 
 let links = document.links;
-let button = document.getElementsByName("search")[0];
-let keywords = ["Раздельный сбор отходов","Куда сдавать батарейки","Куда едут отходы",];
+let btnK = document.getElementsByName("search")[0];
+let keywords = ["Раздельный сбор отходов",
+                "Куда сдавать батарейки",
+                "Сортировка отходов",
+                "Медицинские отходы",
+                "Маркировка пластика",
+                "Штраф за спиленное дерево в городе",];
 let keyword = keywords[getRandom(0, keywords.length)];
+let BingInput = document.getElementsByName("q")[0];
 
-if(button != undefined) {
-document.getElementsByName("q")[0].value = keyword;
-button.click();
-}
-else {
-for(let i = 0; i < links.length; i++) {
-if (links[i].href.includes("rcycle.net")) {
-let link = links[i];
-link.click();
-break;
-};
-};
+
+if(btnK != undefined) {
+  let i = 0;
+  let timerId = setInterval(() => {
+    BingInput.value += keyword[i];
+    i++;
+    if (i == keyword.length) {
+      clearInterval(timerId);
+      btnK.click();
+    }
+  }, 300);
+
+} else if (location.hostname == 'rcycle.net') {
+  console.log("Мы на целевом сайте");
+
+  setInterval(()=>{
+    let index = getRandom(0, links.length);
+    
+    if (getRandom(0,101) >= 70) {
+      location.href = "https://www.bing.com/";}
+    
+    if (links.length == 0){
+    location.href = "https://rcycle.net/";
+    }
+    else if (links[index].href.indexOf("rcycle.net") != -1) {
+      links[index].click()
+    }
+  }, getRandom(2500,5500))
+
+} else {
+  let nextBingPage = true;
+  for(let i = 0; i < links.length; i++) {
+    if (links[i].href.includes("rcycle.net")) {
+      let link = links[i];
+      nextBingPage = false;
+      setTimeout(() => {
+        link.click();
+      }, getRandom (3500,5500));
+      break;
+    };
+  };
+  let elementExist = setInterval(() => {
+    let element = document.querySelector(".sb_pagS");
+    if (element != null){  
+      if (element.innerText == "5") {
+        nextBingPage = false;
+        location.href = "https://www.bing.com/";
+      }
+      clearInterval(elementExist);
+    }
+  },150)
+
+  if (document.querySelector(".sb_pagS").innerText == "5") {
+    nextBingPage = false;
+    location.href = "https://www.bing.com/";
+  };
+  if (nextBingPage) {
+    setTimeout(() =>{
+      let nextbtn = document.querySelector(".sb_pagN_bp");
+      nextbtn.click();
+    }, getRandom(5000,7000))
+  };
 };
 
 function getRandom(min, max) {
-return Math.floor(Math.random() * (max - min) + min);
+  return Math.floor(Math.random() * (max - min) + min);
 };
